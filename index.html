@@ -718,15 +718,22 @@ const defaultData = {
 // =====================
 // STATE
 // =====================
-let data = loadData();
 let editMode = false;
 let openSubjects = new Set();
+let data;
 
 function loadData() {
   try {
     const saved = localStorage.getItem('reema_hub_data');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Validate it has subjects array
+      if (parsed && Array.isArray(parsed.subjects) && parsed.subjects.length > 0) {
+        return parsed;
+      }
+    }
   } catch(e) {}
+  // Always return a deep copy of defaultData
   return JSON.parse(JSON.stringify(defaultData));
 }
 
@@ -735,6 +742,8 @@ function saveData() {
     localStorage.setItem('reema_hub_data', JSON.stringify(data));
   } catch(e) {}
 }
+
+data = loadData();
 
 // =====================
 // RENDER
